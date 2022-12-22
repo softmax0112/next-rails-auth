@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  backend:
+    tty: true
+    build:
+      context: ./api/
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api:/api
+    command: rails server -b 0.0.0.0
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:3000"
+    working_dir: /frontend
+    volumes:
+      - ./:/frontend
+      - ./node_modules/:/frontend/node_modules
+      - ./.next/:/frontend/.next
+    command: 'yarn dev'
