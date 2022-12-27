@@ -11,15 +11,34 @@ services:
     volumes:
       - ./api:/api
     command: rails server -b 0.0.0.0
+    environment:
+      DB_HOST: db
+      DB_NAME: myappdb
+      DB_USERNAME: my_user
+      DB_PASSWORD: ILoveDoingKnowBe4Training!
+    depends_on:
+      - db
+  db:
+    image: postgres:14.2-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: "postgres -c 'max_connections=500'"
+    environment:
+      POSTGRES_DB: myappdb
+      POSTGRES_USER: my_user
+      POSTGRES_PASSWORD: ILoveDoingKnowBe4Training!
   frontend:
     build:
       context: ./frontend/
       dockerfile: Dockerfile
     ports:
       - "8000:3000"
-    working_dir: /frontend
     volumes:
-      - ./:/frontend
-      - ./node_modules/:/frontend/node_modules
-      - ./.next/:/frontend/.next
+      - ./frontend:/frontend
+      - ./frontend/node_modules/:/frontend/node_modules
+      - ./frontend/.next/:/frontend/.next
     command: 'yarn dev'
+    depends_on:
+      - backend
+volumes:
+  postgres_data: {}
